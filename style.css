@@ -1,0 +1,233 @@
+
+/*---Body---*/
+body{
+    background-image: url(Assets/background.svg);
+    background-repeat:  no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/*---Font Family---*/
+@font-face {
+    font-family: HeaderFont;
+    src: url(Assets/Header-Font.ttf);
+}
+@font-face {
+    font-family: Normal-Text-Font;
+    src: url(Assets/Normal-Text-Font.ttf);
+}
+
+h1, h2, h3{
+    font-family: 'HeaderFont';
+}
+a, p, input{
+    font-family: 'Normal-Text-Font';
+}
+
+/*---Custom Color---*/
+:root{
+    --wineColor: #811331;
+    --lighterWineColor:#7b0323;
+}
+
+/*---Animation---*/
+@keyframes babyAnimation{
+    25%{
+        transform: rotateZ(-30deg);
+    }
+    75%{
+        transform: rotateZ(30deg);
+    }
+}
+
+@keyframes pour {
+    0% {
+      top: -100%;
+    }
+    100% {
+      top: 0;
+    }
+}
+
+@keyframes fill {
+    0% {
+      height: 0;
+    }
+    100% {
+      height: 100%;
+    }
+}
+
+@keyframes frontPageh1Animation{
+    0%{
+        transform: translateY(-30vh);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0vh);
+        opacity: 100%;
+    }
+}
+
+/*---Transition---*/
+#transitionAnimation{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    overflow: hidden;
+}
+#wine-pour {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    width: 5vh;
+    height: 100%;
+    background-color: var(--lighterWineColor);
+    transform: translateX(-50%);
+}
+
+#wine-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: var(--lighterWineColor);
+}
+
+/*---Age Verification Section---*/
+#ageVerificationSection{
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+.ageVerification{
+    width: 50vh;
+    background-color: whitesmoke;
+    height: 40vh;
+    border-radius: 3%;
+    border: rgb(183, 183, 183) 2px solid;
+}
+    /*Normal Mode*/
+    #normalMode{
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+    }
+    .ageVerification h1{
+        font-size: 2em;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+    .ageVerification a{
+        font-size: 1.1em;
+        width: 90%;
+    }
+    .ageVerification input{
+        font-size: 1.1em;
+    }
+    .ageVerification span{
+        background-color: var(--wineColor);
+        color: whitesmoke;
+        width: 20vh;
+        height: 5vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2vh;
+        border-radius: 5px;
+        transition: color 500ms;
+        transition: background 500ms;
+    }
+    .ageVerification span:hover{
+        background-color: whitesmoke;
+        color: var(--wineColor);
+        transition: color 500ms;
+        transition: background 500ms;
+        border: lightgray 2px solid;
+        cursor: pointer;
+    }
+
+    /*Loading Mode*/
+    #loadingMode{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #loadingMode img{
+        width: 12vh;
+        height: 12vh;
+    }
+    /*Baby Mode*/
+    #babyMode{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #babyMode img{
+        height: 70%;
+    }
+    #babyMode img:hover{
+        cursor: pointer;
+    }
+
+
+
+/*---Main Page Section---*/
+#mainPageSection{
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+    /*---Front Page---*/
+    .frontPage{
+        width: 100%;
+        height: 100%;
+    }
+    .frontPageText{
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        color: white;
+        z-index: 2;
+    }
+    .frontPage h1{
+        font-size: 10em;
+        animation: frontPageh1Animation 1s ease-out;
+    }
+    .frontPage img{
+        position: absolute;
+        /*filter: blur(6px);*/
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+    }
+
+    /*---Content---*/
+    .content{
+        width: 100%;
+        height: 100vh;
+        background-color: whitesmoke;
+    }
+
+/*---Minigame Section---*/

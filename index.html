@@ -4,11 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Víno</title>
-    <link rel="shortcut icon" href="Assets/vine_icon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="Assets/wine_icon.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 </head>
 <body>
-    
+    <section id="transitionAnimation" style="display: none;">
+        <div id="wine-pour"></div>
+        <div id="wine-fill"></div>
+    </section>
+    <section id="ageVerificationSection">
+        <div class="ageVerification" style="display: none;">
+            <section id="normalMode">
+                <h1>Zadejte svůj věk.</h1>
+                <a>Vstupujete na stránky s prodejem alkoholu. Prosím potvrďte, že Vám již bylo 18 let.</a><br>
+                <input id="ageDate" type="date">
+                <span class="button" onclick="checkAge()">
+                    <a>Potvrdit</a>
+                </span>
+            </section>
+            <section id="loadingMode" style="display: none;">
+                <img src="Assets/loading.gif">
+                <h1>Načítání</h1>
+            </section>
+            <section id="babyMode" style="display: none;">
+                <img src="Assets/baby-idle.png" id="babyImg" alt="baby" onclick="babyHappy()">
+            </section>
+        </div>
+    </section>
+    <section id="mainPageSection">
+        <div class="frontPage">
+            <div class="frontPageText">
+                <h1>Víno</h1>
+            </div>
+            <img src="Assets/background2.jpg" alt="víno">
+        </div>
+        <div class="content">
+
+        </div>
+    </section>
+    <section id="minigameSection" style="display: none;">
+
+    </section>
+    <script src="gameScript.js"></script>
 </body>
 <script src="script.js"></script>
 </html>
