@@ -5,6 +5,11 @@ body{
     background-repeat:  no-repeat;
     background-size: cover;
     background-attachment: fixed;
+    user-select: none;
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
 }
 
 /*---Font Family---*/
@@ -66,6 +71,18 @@ a, p, input{
     100%{
         transform: translateY(0vh);
         opacity: 100%;
+    }
+}
+
+@keyframes arrowAnimation{
+    0%{
+        transform: translateX(-5vh);
+    }
+    50%{
+        transform: translateX(0vh);
+    }
+    100%{
+        transform: translateX(-5vh);
     }
 }
 
@@ -187,7 +204,6 @@ a, p, input{
     }
 
 
-
 /*---Main Page Section---*/
 #mainPageSection{
     width: 100%;
@@ -207,6 +223,7 @@ a, p, input{
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
         position: absolute;
         color: white;
         z-index: 2;
@@ -215,7 +232,24 @@ a, p, input{
         font-size: 10em;
         animation: frontPageh1Animation 1s ease-out;
     }
-    .frontPage img{
+
+    /*---Arrow---*/
+    .scrollArrow{
+        width: 10vh;
+        height: 10vh;
+        transform: rotateZ(90deg);
+    }
+    .scrollArrow:hover{
+        cursor: pointer;
+    }
+    .scrollArrow img{
+        filter: invert(1);
+        width: 100%;
+        height: 100%;
+        animation: arrowAnimation 1s infinite ease-in-out;
+    }
+
+    .background{
         position: absolute;
         /*filter: blur(6px);*/
         z-index: 1;
@@ -226,8 +260,65 @@ a, p, input{
     /*---Content---*/
     .content{
         width: 100%;
-        height: 100vh;
-        background-color: whitesmoke;
+        height: 90vh;
+        padding-top: 11vh;
     }
+
+    .body{
+        width: 70%;
+        height: 90%;
+        background-color: whitesmoke;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 10px;
+        border: 5px lightgray solid;
+    }
+    .body h1{
+        font-size: 1.8em;
+        margin: 0;
+        margin-top: 2vh;
+    }
+    .wineSelection{
+        width: 100%;
+        height: 90%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2vh 5vh;
+        padding-top: 3vh;
+        justify-content: center;
+    }
+    .card{
+        width: 20vh;
+        height: 30vh;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        background-color: white;
+        border-radius: 5px;
+        border: 5px lightgray solid;
+        transition: transform 400ms;
+    }
+    .card:hover{
+        cursor: pointer;
+    }
+    .card img{
+        width: 100%;
+    }
+    .card span{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card h2{
+        margin: 0;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
 
 /*---Minigame Section---*/

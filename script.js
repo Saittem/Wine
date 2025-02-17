@@ -75,3 +75,68 @@ function babyHappy(){
         babySound.pause;
     }, 2000);
 }
+
+//scroll button
+let isOnBottom = false;
+const frontPageImageHeight = document.getElementById("frontPageImage").clientHeight;
+
+function scrollButton() {
+    const top = 0;
+
+    if (!isOnBottom){
+        
+        clearTimeout(window.scrollTimeout);
+        window.scrollTimeout = setTimeout(() => {
+            window.scrollTo({ top:frontPageImageHeight, behavior: "smooth" });
+        }, 100);
+    }
+    else{
+        clearTimeout(window.scrollTimeout);
+        window.scrollTimeout = setTimeout(() => {
+            window.scrollTo({ top: isOnBottom ? top : frontPageImageHeight, behavior: "smooth" });
+        }, 100);
+    }
+    console.log(isOnBottom);
+    isOnBottom = !isOnBottom;
+}
+
+function preventScroll(event) {
+    event.preventDefault();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+});
+
+//card effect
+let cards = document.querySelectorAll(".card");
+
+function rotate(cursorPosition, centerPosition, threshold = 20) {
+  if (cursorPosition - centerPosition >= 0) {
+    return (cursorPosition - centerPosition) >= threshold ? threshold : (cursorPosition - centerPosition);
+  } else {
+    return (cursorPosition - centerPosition) <= -threshold ? -threshold : (cursorPosition - centerPosition);
+  }
+}
+
+cards.forEach(card => {
+  card.addEventListener("mousemove", function (event) {
+    let rect = card.getBoundingClientRect();
+    let centerX = rect.left + rect.width / 2;
+    let centerY = rect.top + rect.height / 2;
+
+    card.style.transform = `perspective(1000px)
+      rotateY(${rotate(event.x, centerX)}deg)
+      rotateX(${-rotate(event.y, centerY)}deg)`;
+    card.style.transition = "scale 500ms";
+    card.style.scale = "1.3";
+  });
+
+  card.addEventListener("mouseleave", function (event) {
+    card.style.transform = `perspective(500px)`;
+    card.style.width = "20vh";
+    card.style.height = "30vh";
+    card.style.scale = "1";
+  });
+});
