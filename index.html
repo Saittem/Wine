@@ -9,6 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 </head>
 <body>
+    <div id="drinkingCount"></div>
+    <div id="frenchMusic"></div>
     <section id="transitionAnimation" style="display: none;">
         <div id="wine-pour"></div>
         <div id="wine-fill"></div>
@@ -36,59 +38,67 @@
         <div class="frontPage">
             <div class="frontPageText">
                 <h1>Víno</h1>
-                <div class="scrollArrow" onclick="scrollButton()">
-                    <img src="Assets/arrow.png" alt="">
+                <div class="scrollArrow" onclick="scrollButtonDown()" id="scrollArrow">
+                    <img src="Assets/arrow.png">
                 </div>
             </div>
             <img class="background" src="Assets/background2.jpg" alt="víno" id="frontPageImage">
         </div>
         <div class="content">
-            <div class="body">
-                <h1>Vyberte si víno.</h1>
-                <span class="wineSelection">
-                    <div class="card">
+            <div class="scrollArrow contentArrow" onclick="scrollButtonUp()">
+                <img src="Assets/arrow.png">
+            </div>
+            <div class="body" id="contentBody">
+                <h1 id="wineText">Vyberte si víno.</h1>
+                <span class="wineSelection" id="wineSelection">
+                    <div class="card" onclick="wineChosen('šumivé víno')">
                         <img src="Assets/sparkling.jpg" alt="šumivé víno">
                         <span>
                             <h2>Šumivé víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('suché bílé víno')">
                         <img src="Assets/dry-white.jpg" alt="suché bílé víno">
                         <span>
                             <h2>Suché bílé víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('sladké bílé víno')">
                         <img src="Assets/sweet-white.jpg" alt="sladké bílé víno">
                         <span>
                             <h2>Sladké bílé víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('bohaté bílé víno')">
                         <img src="Assets/rich-white.jpg" alt="bohaté bílé víno">
                         <span>
                             <h2>Bohaté bílé víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('lehce červené víno')">
                         <img src="Assets/light-red.jpg" alt="lehce červené víno">
                         <span>
                             <h2>Lehce červené víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('středně červené víno')">
                         <img src="Assets/medium-red.jpg" alt="středně červené víno">
                         <span>
                             <h2>Středně červené víno</h2>
                         </span>
                     </div>
-                    <div class="card">
+                    <div class="card" onclick="wineChosen('dezertní víno')">
                         <img src="Assets/dessert.jpg" alt="dezertní víno">
                         <span>
                             <h2>Dezertní víno</h2>
                         </span>
                     </div>
                 </span>
+                <h1 id="drinkText" style="display: none;"></h1>
+                <div id="drinkButton" style="display: none;">
+                    <a onclick="drink()">Napít se</a>
+                </div>
+                <img src="" id="pouringImage" style="display: none;">
             </div>
         </div>
     </section>

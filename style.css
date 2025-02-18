@@ -86,6 +86,7 @@ a, p, input{
     }
 }
 
+
 /*---Transition---*/
 #transitionAnimation{
     top: 0;
@@ -264,6 +265,12 @@ a, p, input{
         padding-top: 11vh;
     }
 
+    /*---Content Arrow---*/
+    .contentArrow{
+        position: absolute;
+        transform: translateX(175vh) rotateZ(-90deg);
+    }
+
     .body{
         width: 70%;
         height: 90%;
@@ -320,5 +327,30 @@ a, p, input{
         text-align: center;
     }
 
+    /*---Drinking---*/
+    #drinkButton{
+        width: 25vh;
+        height: 10vh;
+        background-color: var(--wineColor);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: whitesmoke;
+        font-size: 1.5em;
+        transition: background 500ms;
+        transition: color 500ms;
+    }
+    #drinkButton:hover{
+        cursor: pointer;
+        background-color: whitesmoke;
+        color: var(--wineColor);
+        border: 3px lightgray solid;
+        transition: background 500ms;
+        transition: color 500ms;
+    }
+    #pouringImage{
+        height: 90%;
+    }
 
 /*---Minigame Section---*/
