@@ -9,8 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 </head>
 <body>
-    <div id="drinkingCount"></div>
-    <div id="frenchMusic"></div>
     <section id="transitionAnimation" style="display: none;">
         <div id="wine-pour"></div>
         <div id="wine-fill"></div>
@@ -45,8 +43,18 @@
             <img class="background" src="Assets/background2.jpg" alt="víno" id="frontPageImage">
         </div>
         <div class="content">
+            <div id="drinkingCount">
+                <a id="drinkCount">Počet vypití: 0</a>
+            </div>
             <div class="scrollArrow contentArrow" onclick="scrollButtonUp()">
                 <img src="Assets/arrow.png">
+            </div>
+            <div id="frenchMusic">
+                <img src="Assets/volume-icon.png" onclick="playFrench()">
+                <input type="range" id="audioVolume" value="50%">
+            </div>
+            <div id="playButton">
+                <img src="" alt="">
             </div>
             <div class="body" id="contentBody">
                 <h1 id="wineText">Vyberte si víno.</h1>
@@ -95,8 +103,14 @@
                     </div>
                 </span>
                 <h1 id="drinkText" style="display: none;"></h1>
-                <div id="drinkButton" style="display: none;">
-                    <a onclick="drink()">Napít se</a>
+                <h1 id="drinkText2" style="display: none;">Pokud se napiješ 5 stane se něco dobrého.</h1>
+                <div id="drinkButtons">
+                    <div id="drinkButton" style="display: none;" onclick="drink()">
+                        <a>Napít se</a>
+                    </div>
+                    <div id="bodyBackButton" onclick="bodyBack()" style="display: none;">
+                        <a>Jít Zpátky</a>
+                    </div>
                 </div>
                 <img src="" id="pouringImage" style="display: none;">
             </div>

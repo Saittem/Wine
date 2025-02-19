@@ -76,6 +76,7 @@ function babyHappy(){
     }, 2000);
 }
 
+
 //scroll button
 let isOnBottom = false;
 const frontPageImageHeight = document.getElementById("frontPageImage").clientHeight;
@@ -103,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("wheel", preventScroll, { passive: false });
     window.addEventListener("touchmove", preventScroll, { passive: false });
 });
+
 
 //card effect
 let cards = document.querySelectorAll(".card");
@@ -136,13 +138,16 @@ cards.forEach(card => {
   });
 });
 
+
 //drinking function
 const drinkText = document.getElementById("drinkText");
+const drinkText2 = document.getElementById("drinkText2");
 const drinkButton = document.getElementById("drinkButton");
 const wineText = document.getElementById("wineText");
 const wineSelection = document.getElementById("wineSelection");
 const contentBody = document.getElementById("contentBody");
 const pouringImage = document.getElementById("pouringImage");
+const bodyBackButton = document.getElementById("bodyBackButton");
 let type;
 const whiteWine = ["šumivé víno", "suché bílé víno", "sladké bílé víno", "bohaté bílé víno"];
 const redWine = ["lehce červené víno", "středně červené víno", "dezertní víno"];
@@ -152,7 +157,9 @@ function wineChosen(wineName){
     wineText.style.display = "none";
     wineSelection.style.display = "none";
     drinkText.style.display = "";
+    drinkText2.style.display = "";
     drinkButton.style.display = "";
+    bodyBackButton.style.display = "";
     contentBody.style.display = "flex";
     contentBody.style.justifyContent = "center";
     contentBody.style.alignItems = "center"
@@ -168,9 +175,16 @@ function wineChosen(wineName){
     }
 }
 
+const frenchMusicRange = document.getElementById("audioVolume");
+const frenchMusic = new Audio("Assets/french-music.mp3");
+let isPlaying = false;
+
 function pouringAudioEnded(){
+    frenchMusic.volume = 0.5;
     drinkText.style.display = "";
+    drinkText2.style.display = "";
     drinkButton.style.display = "";
+    bodyBackButton.style.display = "";
     pouringImage.style.display = "none";
 }
 
@@ -186,8 +200,54 @@ function drink(){
     }
 
     drinkText.style.display = "none";
+    drinkText2.style.display = "none";
     drinkButton.style.display = "none";
+    bodyBackButton.style.display = "none";
     pouringImage.style.display = "";
-    pouringSound.play();
+
+    if (isPlaying){
+        frenchMusic.volume = 0.1;
+        pouringSound.play();
+    }
+    else{
+        pouringSound.play();
+    }
+
+    changeDrinkCount();
+}
+
+function bodyBack(){
+    wineText.style.display = "";
+    wineSelection.style.display = "";
+    drinkText.style.display = "none";
+    drinkText2.style.display = "none";
+    drinkButton.style.display = "none";
+    bodyBackButton.style.display = "none";
+    contentBody.style.alignItems = "";
+    contentBody.style.gap = "";
+}
+
+function changeDrinkCount(){
+    const drinkCounter = document.getElementById("drinkCount");
     drinkCount += 1;
+
+    drinkCounter.innerHTML = "Počet vypití: " + drinkCount;
+}
+
+//french music
+frenchMusic.loop = true;
+
+frenchMusicRange.oninput = function(){
+    frenchMusic.volume = this.value / 100;
+}
+
+function playFrench(){
+    if (!isPlaying){
+        frenchMusic.play();
+    }
+    else{
+        frenchMusic.pause();
+    }
+
+    isPlaying = !isPlaying;
 }
