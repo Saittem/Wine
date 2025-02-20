@@ -1,13 +1,14 @@
-var config = {
-    type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    scene: {
-        create: create
-    }
+/*let config = {
+    width: 1280,
+    height: 720,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        create:create
+    },
 };
-console.log(window.width);
-console.log(window.height);
+console.log(window.innerHeight);
+console.log(window.innerWidth);
 
 var game = new Phaser.Game(config);
 
@@ -15,9 +16,39 @@ function create() {
     var width = this.scale.width;
     var height = this.scale.height;
 
-    // Create a red box covering the left half of the screen
-    this.add.rectangle(width / 4, height / 2, width / 2, height, 0xff0000);
+    this.add.rectangle(0, 0, 100, 30, 0x00f000, .5);
+}*/
 
-    // Create a blue box covering the right half of the screen
-    this.add.rectangle((3 * width) / 4, height / 2, width / 2, height, 0x0000ff);
+let config = {
+    type: Phaser.AUTO,
+    width: window.innerWidth, // Use the window width for the game size
+    height: window.innerHeight, // Use the window height for the game size
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+let Spongeimage;
+
+function preload() {
+    this.load.image('myImage', 'Assets/sponge.png');
 }
+
+function create() {
+    Spongeimage = this.add.image(0, 0, 'myImage');  
+    Spongeimage.setScale(0.3);
+}
+
+function update() {
+    let mouseX = this.input.mousePointer.x;
+    let mouseY = this.input.mousePointer.y;
+
+    Spongeimage.x = mouseX;
+    Spongeimage.y = mouseY;
+
+    Spongeimage.rotation = -50;
+}
+
+let game = new Phaser.Game(config);

@@ -78,12 +78,13 @@ function babyHappy(){
 
 
 //scroll button
-let isOnBottom = false;
-const frontPageImageHeight = document.getElementById("frontPageImage").clientHeight;
+let frontPageImageHeight;
 
 
 function scrollButtonDown() {
-    clearTimeout(window.scrollTimeout);
+    frontPageImageHeight = document.getElementById("frontPageImage").clientHeight;
+    console.log(frontPageImageHeight);
+    //clearTimeout(window.scrollTimeout);
     window.scrollTimeout = setTimeout(() => {
         window.scrollTo({ top:frontPageImageHeight, behavior: "smooth" });
     }, 100);

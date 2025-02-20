@@ -134,6 +134,8 @@ a, p, input{
     height: 40vh;
     border-radius: 3%;
     border: rgb(183, 183, 183) 2px solid;
+    display: flex;
+    align-items: center;
 }
     /*Normal Mode*/
     #normalMode{
@@ -222,10 +224,11 @@ a, p, input{
         height: 100%;
         width: 100%;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
         flex-direction: column;
         position: absolute;
+        gap: 15vh;
         color: white;
         z-index: 2;
     }
@@ -239,6 +242,7 @@ a, p, input{
         width: 10vh;
         height: 10vh;
         transform: rotateZ(90deg);
+        margin-bottom: 2vh;
     }
     .scrollArrow:hover{
         cursor: pointer;
@@ -342,7 +346,7 @@ a, p, input{
     /*---Content Arrow---*/
     .contentArrow{
         position: absolute;
-        transform: translateX(175vh) rotateZ(-90deg);
+        transform: translateX(180vh) rotateZ(-90deg);
     }
 
     .body{
