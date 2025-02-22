@@ -25,9 +25,6 @@ let refillZone; // Refill area
 let refillZoneWidth; // Stores the width of the refill zone
 let lastCollisionTime = 0;  // Track the last collision time
 let splashResetDelay = 1000; // 5 seconds to reset opacity if no collision happens
-let timeInRefillZone = 0; // Time sponge has been in refill zone
-let refillRate = 500; // 500ms interval for refilling water
-let refillAmount = 20; // Refill 20% every 500ms
 
 function preload() {
     this.load.image('playerImage', 'Assets/sponge.png');
@@ -82,19 +79,7 @@ function update() {
     Spongeimage.rotation = -50;
 
     // ✅ Check if sponge is fully inside the refill zone
-    if (isInRefillZone()) {
-        timeInRefillZone += this.game.loop.delta; // Increase the time in the refill zone by delta time (ms)
-
-        // Refill water at a rate of 20% every 500ms
-        if (timeInRefillZone >= refillRate && waterAmount < 100) {
-            waterAmount = Math.min(100, waterAmount + refillAmount);
-            waterText.setText(`Water: ${waterAmount}%`);
-            timeInRefillZone = 0; // Reset the timer after refilling
-        }
-    } else {
-        // Reset the timeInRefillZone if sponge is not in the refill zone
-        timeInRefillZone = 0;
-    }
+    checkRefill();
 
     // Check for splash opacity reset after inactivity
     let currentTime = this.time.now;
@@ -166,27 +151,31 @@ function spawnNewSplash() {
 }
 
 // ✅ Function to check if Spongeimage is fully inside the blue refill zone
-function isInRefillZone() {
+function checkRefill() {
     let spongeBounds = Spongeimage.getBounds();
     let refillBounds = refillZone.getBounds();
-    return (
+
+    // Check if the sponge is completely inside the refill zone
+    if (
         spongeBounds.left >= refillBounds.left &&
         spongeBounds.right <= refillBounds.right &&
         spongeBounds.top >= refillBounds.top &&
         spongeBounds.bottom <= refillBounds.bottom
-    );
+    ) {
+        refillWater();
+    }
 }
 
 // ✅ Function to refill water when inside the blue zone
 function refillWater() {
     if (waterAmount < 100) {
-        waterAmount = Math.min(100, waterAmount + 20);
+        waterAmount = 100;
         waterText.setText(`Water: ${waterAmount}%`); // Update water text
-    }
 
-    // Re-enable cleaning if it was disabled
-    if (!overlap) {
-        overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+        // Re-enable cleaning if it was disabled
+        if (!overlap) {
+            overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+        }
     }
 }
 
