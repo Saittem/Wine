@@ -130,6 +130,7 @@ a, p, input{
 }
 .ageVerification{
     width: 50vh;
+    max-width: 80%;
     background-color: whitesmoke;
     height: 40vh;
     border-radius: 3%;
@@ -139,8 +140,10 @@ a, p, input{
 }
     /*Normal Mode*/
     #normalMode{
+        width: 100%;
+        height: 100%;
         display: flex;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
         flex-direction: column;
         text-align: center;
@@ -219,22 +222,24 @@ a, p, input{
     .frontPage{
         width: 100%;
         height: 100%;
-    }
-    .frontPageText{
-        height: 100%;
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
+        background-image: url(Assets/background2.jpg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: grid;
         align-items: center;
         flex-direction: column;
-        position: absolute;
-        gap: 15vh;
         color: white;
-        z-index: 2;
+    }
+    @media only screen and (max-width: 600px){
+        .frontPage{
+            background-image: url(Assets/smartphone-background.jpg);
+        }
     }
     .frontPage h1{
-        font-size: 10em;
+        font-size: 20vh;
         animation: frontPageh1Animation 1s ease-out;
+        justify-self: center;
     }
 
     /*---Arrow---*/
@@ -243,6 +248,7 @@ a, p, input{
         height: 10vh;
         transform: rotateZ(90deg);
         margin-bottom: 2vh;
+        justify-self: center;
     }
     .scrollArrow:hover{
         cursor: pointer;
@@ -288,6 +294,28 @@ a, p, input{
             transition: filter 250ms ease-in-out;
         }
 
+        /*---Music Mobile---*/
+        #musicButtonMobile{
+            height: 8vh;
+            width: 70%;
+            background-color: var(--lighterWineColor);
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vh;
+            border-radius: 15px;
+        }
+        #musicButtonMobile img{
+            height: 80%;
+            filter: invert(1);
+        }
+        #musicButtonMobile a{
+            color: whitesmoke;
+            font-size: 3vh;
+        }
+
         /*---Music Slider---*/
         #audioVolume{
             -webkit-appearance: none;
@@ -302,8 +330,8 @@ a, p, input{
         #audioVolume::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 3vh;
+            height: 3vh;
             border-radius: 50%; 
             background: lightgray;
 
@@ -328,30 +356,25 @@ a, p, input{
             border-radius: 10px;
         }
 
-    .background{
-        position: absolute;
-        /*filter: blur(6px);*/
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-    }
 
     /*---Content---*/
     .content{
         width: 100%;
-        height: 100vh;
+        height: 95vh;
         padding-top: 5vh;
     }
 
     /*---Content Arrow---*/
     .contentArrow{
         position: absolute;
-        transform: translateX(180vh) rotateZ(-90deg);
+        transform: translateX(175vh) rotateZ(-90deg);
     }
 
     .body{
         width: 70%;
-        height: 80%;
+        max-height: fit-content;
+        min-height: fit-content;
+        padding-bottom: 2vh;
         background-color: whitesmoke;
         margin-left: auto;
         margin-right: auto;
@@ -360,10 +383,10 @@ a, p, input{
         align-items: center;
         border-radius: 10px;
         border: 5px lightgray solid;
-        margin-top: 5vh;
+        margin-top: 7vh;
     }
     .body h1{
-        font-size: 1.8em;
+        font-size: 5vh;
         margin: 0;
         margin-top: 2vh;
     }
@@ -402,7 +425,7 @@ a, p, input{
     }
     .card h2{
         margin: 0;
-        font-size: 1.2em;
+        font-size: 3vh;
         text-align: center;
     }
 
@@ -412,7 +435,12 @@ a, p, input{
         flex-direction: row;
         gap: 3vh;
     }
-    #drinkButton, #bodyBackButton{
+    @media only screen and (max-width: 600px){
+        #drinkButtons{
+            flex-direction: column;
+        }
+    }
+    #drinkButton, #bodyBackButton, #buyButton, #buyBackButton{
         width: 25vh;
         height: 10vh;
         background-color: var(--wineColor);
@@ -421,11 +449,11 @@ a, p, input{
         align-items: center;
         justify-content: center;
         color: whitesmoke;
-        font-size: 1.5em;
+        font-size: 4vh;
         transition: background 500ms;
         transition: color 500ms;
     }
-    #drinkButton:hover, #bodyBackButton:hover{
+    #drinkButton:hover, #bodyBackButton:hover, #buyButton:hover, #buyBackButton:hover{
         cursor: pointer;
         background-color: whitesmoke;
         color: var(--wineColor);

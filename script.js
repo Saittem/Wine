@@ -52,6 +52,7 @@ function OldEnough(){
     }, 1500);
 
     setTimeout(() => {
+        transition.style.display = "none";
         winePour.style.animation = "none";
         wineFill.style.animation = "none";
         ageVerificationSection.style.display = "none";
@@ -78,27 +79,46 @@ function babyHappy(){
 
 
 //scroll button
-let frontPageImageHeight;
+let frontPageHeight;
+const mobileCheck = navigator.userAgentData.mobile;
+const drinkingCount = document.getElementById("drinkingCount");
+const frenchMusicButton = document.getElementById("frenchMusic");
+const musicButtonMobile = document.getElementById("musicButtonMobile");
+const drinkText = document.getElementById("drinkText");
 
+if (mobileCheck){
+    let scrollArrow = document.getElementById("scrollArrow");
+    let scrollArrowBack = document.getElementById("scrollArrowBack");
+
+    scrollArrow.style.display = "none";
+    scrollArrowBack.style.display = "none";
+    drinkingCount.style.display = "none";
+    frenchMusicButton.style.display = "none";
+    musicButtonMobile.style.display = "";
+    drinkText.style.marginTop = "3vh";
+    drinkText.style.fontSize = "4vh";
+}
+else{
+    function preventScroll(event) {
+        event.preventDefault();
+    }
+}
 
 function scrollButtonDown() {
-    frontPageImageHeight = document.getElementById("frontPageImage").clientHeight;
-    console.log(frontPageImageHeight);
-    //clearTimeout(window.scrollTimeout);
+    frontPageHeight = document.getElementById("frontPage").clientHeight;
+    console.log(frontPageHeight);
+    clearTimeout(window.scrollTimeout);
     window.scrollTimeout = setTimeout(() => {
-        window.scrollTo({ top:frontPageImageHeight, behavior: "smooth" });
+        window.scrollTo({ top: frontPageHeight, behavior: "smooth" });
     }, 100);
 }
+
 
 function scrollButtonUp(){
     clearTimeout(window.scrollTimeout);
     window.scrollTimeout = setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, 100);
-}
-
-function preventScroll(event) {
-    event.preventDefault();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -141,7 +161,6 @@ cards.forEach(card => {
 
 
 //drinking function
-const drinkText = document.getElementById("drinkText");
 const drinkText2 = document.getElementById("drinkText2");
 const drinkButton = document.getElementById("drinkButton");
 const wineText = document.getElementById("wineText");
@@ -149,21 +168,32 @@ const wineSelection = document.getElementById("wineSelection");
 const contentBody = document.getElementById("contentBody");
 const pouringImage = document.getElementById("pouringImage");
 const bodyBackButton = document.getElementById("bodyBackButton");
+const buyButton = document.getElementById("buyButton");
 let type;
 const whiteWine = ["šumivé víno", "suché bílé víno", "sladké bílé víno", "bohaté bílé víno"];
 const redWine = ["lehce červené víno", "středně červené víno", "dezertní víno"];
 let drinkCount = 0;
+let chosenWineName;
 
 function wineChosen(wineName){
+    chosenWineName = wineName;
     wineText.style.display = "none";
     wineSelection.style.display = "none";
     drinkText.style.display = "";
-    drinkText2.style.display = "";
+    buyButton.style.display = "";
+    
+    if (!mobileCheck){
+        drinkText2.style.display = "";
+        contentBody.style.display = "flex";
+        contentBody.style.justifyContent = "center";
+        contentBody.style.alignItems = "center"
+    }
+    else{
+        contentBody.style.textAlign = "center";
+    }
+
     drinkButton.style.display = "";
     bodyBackButton.style.display = "";
-    contentBody.style.display = "flex";
-    contentBody.style.justifyContent = "center";
-    contentBody.style.alignItems = "center"
     contentBody.style.gap = "5vh";
 
     drinkText.innerHTML = "Vybrali jste si " + wineName + ".";
@@ -179,14 +209,16 @@ function wineChosen(wineName){
 const frenchMusicRange = document.getElementById("audioVolume");
 const frenchMusic = new Audio("Assets/french-music.mp3");
 let isPlaying = false;
+let musicVolume;
 
 function pouringAudioEnded(){
-    frenchMusic.volume = 0.5;
+    frenchMusic.volume = musicVolume;
     drinkText.style.display = "";
     drinkText2.style.display = "";
     drinkButton.style.display = "";
     bodyBackButton.style.display = "";
     pouringImage.style.display = "none";
+    buyButton.style.display = "";
 }
 
 function drink(){
@@ -205,8 +237,11 @@ function drink(){
     drinkButton.style.display = "none";
     bodyBackButton.style.display = "none";
     pouringImage.style.display = "";
+    buyButton.style.display = "none";
+    buyButton.style.display = "none";
 
     if (isPlaying){
+        musicVolume = frenchMusic.volume;
         frenchMusic.volume = 0.1;
         pouringSound.play();
     }
@@ -226,6 +261,7 @@ function bodyBack(){
     bodyBackButton.style.display = "none";
     contentBody.style.alignItems = "";
     contentBody.style.gap = "";
+    buyButton.style.display = "none";
 }
 
 function changeDrinkCount(){
@@ -251,4 +287,34 @@ function playFrench(){
     }
 
     isPlaying = !isPlaying;
+}
+
+
+//buy wine
+const buyBackButton = document.getElementById("buyBackButton");
+
+function buyWine(){
+    drinkText.innerHTML = "Pokud is chcete koupit " + chosenWineName + ", kontaktujte nás na +420 123 456 798.";
+    buyBackButton.style.display = "";
+    
+    if(!mobileCheck){
+        drinkText2.style.display = "none";
+    }
+
+    drinkButton.style.display = "none";
+    bodyBackButton.style.display = "none";
+    buyButton.style.display = "none";
+}
+
+function buyBack(){
+    drinkText.innerHTML = "Vybrali jste si " + chosenWineName + ".";
+    buyBackButton.style.display = "none";
+    
+    if(!mobileCheck){
+        drinkText2.style.display = "";
+    }
+
+    drinkButton.style.display = "";
+    bodyBackButton.style.display = "";
+    buyButton.style.display = "";
 }

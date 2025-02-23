@@ -33,27 +33,28 @@
         </div>
     </section>
     <section id="mainPageSection" style="display: none;">
-        <div class="frontPage">
-            <div class="frontPageText">
-                <h1>Víno</h1>
-                <div class="scrollArrow" onclick="scrollButtonDown()" id="scrollArrow">
-                    <img src="Assets/arrow.png">
-                </div>
+        <div class="frontPage" id="frontPage">
+            <h1>Víno</h1>
+            <div class="scrollArrow" onclick="scrollButtonDown()" id="scrollArrow">
+                <img src="Assets/arrow.png">
             </div>
-            <img class="background" src="Assets/background2.jpg" alt="víno" id="frontPageImage">
         </div>
         <div class="content">
             <div id="drinkingCount">
                 <a id="drinkCount">Počet vypití: 0</a>
             </div>
-            <div class="scrollArrow contentArrow" onclick="scrollButtonUp()">
+            <div class="scrollArrow contentArrow" onclick="scrollButtonUp()" id="scrollArrowBack">
                 <img src="Assets/arrow.png">
             </div>
             <div id="frenchMusic">
                 <img src="Assets/volume-icon.png" onclick="playFrench()">
                 <input type="range" id="audioVolume" value="50%">
             </div>
-            <div id="playButton">
+            <div id="musicButtonMobile" onclick="playFrench()" style="display: none;">
+                <a>Muzika</a>
+                <img src="Assets/volume-icon.png">
+            </div>
+            <div id="playButton" style="display: none;">
                 <img src="" alt="">
             </div>
             <div class="body" id="contentBody">
@@ -104,11 +105,18 @@
                 </span>
                 <h1 id="drinkText" style="display: none;"></h1>
                 <h1 id="drinkText2" style="display: none;">Pokud se napiješ 5 stane se něco dobrého.</h1>
+                <a></a>
                 <div id="drinkButtons">
                     <div id="drinkButton" style="display: none;" onclick="drink()">
                         <a>Napít se</a>
                     </div>
                     <div id="bodyBackButton" onclick="bodyBack()" style="display: none;">
+                        <a>Jít Zpátky</a>
+                    </div>
+                    <div id="buyButton" style="display: none;" onclick="buyWine()">
+                        <a>Chci koupit</a>
+                    </div>
+                    <div id="buyBackButton" style="display: none;" onclick="buyBack()">
                         <a>Jít Zpátky</a>
                     </div>
                 </div>
