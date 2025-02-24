@@ -2,10 +2,10 @@ let config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
-    backgroundColor: 0xF5F5F5, // ✅ Set background color to whitesmoke
+    backgroundColor: 0xF5F5F5,
     physics: {
         default: "arcade",
-        arcade: { debug: true }
+        arcade: { debug: false }
     },
     scene: {
         preload: preload,
@@ -16,156 +16,190 @@ let config = {
 
 let Spongeimage;
 let prevX, prevY;
-let splash; // The splash image
-let lastDetectionTime = 0; // Cooldown timer
-let score = 0; // Score counter
-let waterAmount = 100; // Water amount (starts at 100%)
-let overlap; // Stores the overlap collider
-let refillZone; // Refill area
-let refillZoneWidth; // Stores the width of the refill zone
-let lastCollisionTime = 0;  // Track the last collision time
-let splashResetDelay = 1000; // 5 seconds to reset opacity if no collision happens
-let timeInRefillZone = 0; // Time sponge has been in refill zone
-let refillRate = 500; // 500ms interval for refilling water
-let refillAmount = 20; // Refill 20% every 500ms
+let splash;
+let lastDetectionTime = 0;
+let score = 0;
+let waterAmount = 100;
+let overlap;
+let refillZone;
+let refillZoneImage;
+let refillZoneWidth;
+let lastCollisionTime = 0;
+let splashResetDelay = 1000;
+let timeInRefillZone = 0;
+let refillRate = 500;
+let refillAmount = 20;
+let timeLeft = 60;
+let fireObstacles = [];
+let maxFires = 4;
+let lastFireCollisionTime = 0;
+let fireCooldown = 2000;
+
+let gameOverPopup;
+let refreshButton;
+let startGamePopup;
+let startGameButton;
 
 function preload() {
     this.load.image('playerImage', 'Assets/sponge.png');
     this.load.image('splashImage', 'Assets/wine-splash.svg');
+    this.load.image('refillZoneImage', 'Assets/water.png');
+    this.load.image('fireImage', 'Assets/fire.png');
+    this.load.image('carpet', 'Assets/carpet.png');
 }
 
 function create() {
-    // ✅ Create water refill zone (8% width, full height)
-    refillZoneWidth = window.innerWidth * 0.15;
-    refillZone = this.add.rectangle(refillZoneWidth / 2, window.innerHeight / 2, refillZoneWidth, window.innerHeight, 0x0000FF);
-    this.physics.add.existing(refillZone, true); // Make it a physics static object
+    this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'carpet').setDisplaySize(window.innerWidth, window.innerHeight).setDepth(-1);
 
-    // Create player (Spongeimage) as a physics object
-    Spongeimage = this.physics.add.image(0, 0, 'playerImage');
-    Spongeimage.setScale(0.2);
-    Spongeimage.setCollideWorldBounds(true);
-    Spongeimage.setDepth(1); // Ensure Sponge is always above the splash
+    createStartGamePopup();
+    createGameOverPopup(); // Ensure the game over popup is created
 
-    // Store initial position
-    prevX = Spongeimage.x;
-    prevY = Spongeimage.y;
-
-    // Create the first splash
-    spawnNewSplash.call(this);
-
-    // Add score text in the top-right corner (shifted 100px to the left)
-    scoreText = this.add.text(window.innerWidth - 200, 10, `Score: ${score}`, {
-        fontSize: '32px',
-        fill: '#000000',
-        fontFamily: 'Arial'
-    }).setDepth(2); // Score text depth
-
-    // Add water amount text beneath the score
-    waterText = this.add.text(window.innerWidth - 200, 50, `Water: ${waterAmount}%`, {
-        fontSize: '32px',
-        fill: '#000000',
-        fontFamily: 'Arial'
-    }).setDepth(2); // Water text depth
-
-    // Enable overlap detection
-    overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+    this.scene.pause();
 }
 
 function update() {
-    let mouseX = this.input.mousePointer.x;
-    let mouseY = this.input.mousePointer.y;
-
-    // Move Spongeimage with the mouse
     Spongeimage.setVelocity(0);
-    Spongeimage.x = mouseX;
-    Spongeimage.y = mouseY;
+    Spongeimage.x = this.input.mousePointer.x;
+    Spongeimage.y = this.input.mousePointer.y;
     Spongeimage.rotation = -50;
 
-    // ✅ Check if sponge is fully inside the refill zone
     if (isInRefillZone()) {
-        timeInRefillZone += this.game.loop.delta; // Increase the time in the refill zone by delta time (ms)
-
-        // Refill water at a rate of 20% every 500ms
+        timeInRefillZone += this.game.loop.delta;
         if (timeInRefillZone >= refillRate && waterAmount < 100) {
             waterAmount = Math.min(100, waterAmount + refillAmount);
             waterText.setText(`Water: ${waterAmount}%`);
-            timeInRefillZone = 0; // Reset the timer after refilling
+            timeInRefillZone = 0;
+            moveFireObstacles.call(this);
         }
     } else {
-        // Reset the timeInRefillZone if sponge is not in the refill zone
         timeInRefillZone = 0;
-    }
-
-    // Check for splash opacity reset after inactivity
-    let currentTime = this.time.now;
-    if (currentTime - lastCollisionTime >= splashResetDelay) {
-        // Reset splash opacity if no collision happened in the last 5 seconds
-        if (splash.alpha < 1) {
-            splash.setAlpha(1);
-        }
     }
 }
 
-// Function to detect movement inside the splash
 function detectMovement(player, splash) {
-    let currentTime = this.time.now; // Get current time in ms
-
-    // Stop detection if water is 0%
+    let currentTime = this.time.now;
     if (waterAmount === 0) return;
-
-    // Check if enough time has passed since last detection
-    if (currentTime - lastDetectionTime >= 150) { // Cooldown set to 150ms
+    if (currentTime - lastDetectionTime >= 150) {
         if (player.x !== prevX || player.y !== prevY) {
-            lastDetectionTime = currentTime; // Update cooldown timer
-
-            // Reduce splash opacity by 0.1
+            lastDetectionTime = currentTime;
             splash.setAlpha(splash.alpha - 0.1);
-
-            // If splash is fully faded, destroy and spawn a new one
             if (splash.alpha <= 0) {
                 splash.destroy();
                 spawnNewSplash.call(this);
-
-                // Increase the score
                 score++;
-                scoreText.setText(`Score: ${score}`); // Update score display
-
-                // Reduce water amount, but don't let it go below 0%
+                scoreText.setText(`Score: ${score}`);
                 waterAmount = Math.max(0, waterAmount - 10);
-                waterText.setText(`Water: ${waterAmount}%`); // Update water amount display
-
-                // If water reaches 0, remove collision
+                waterText.setText(`Water: ${waterAmount}%`);
+                timeLeft += 5;
+                timerText.setText(`Time: ${timeLeft}`);
                 if (waterAmount === 0) {
-                    this.physics.world.removeCollider(overlap); // Remove collision
+                    this.physics.world.removeCollider(overlap);
                 }
             }
-
-            // Update the last collision time when a collision happens
             lastCollisionTime = currentTime;
         }
     }
-
-    // Update previous position
     prevX = player.x;
     prevY = player.y;
 }
 
-// Function to spawn a new splash inside the screen
+function updateTimer() {
+    timeLeft--;
+    timerText.setText(`Time: ${timeLeft}`);
+    if (timeLeft <= 0) gameOver.call(this);
+}
+
+function gameOver() {
+    this.physics.pause();
+    showGameOverPopup();
+}
+
 function spawnNewSplash() {
-    let randomX = Phaser.Math.Between(300, window.innerWidth - 100); // Avoid spawn in refill zone
-    let randomY = Phaser.Math.Between(100, window.innerHeight - 100);
+    let randomX, randomY;
+    let isValidPosition = false;
 
-    splash = this.physics.add.staticImage(randomX, randomY, 'splashImage').setAlpha(1);
-    splash.setScale(1).refreshBody();
-    splash.setDepth(0); // Ensure the splash is always below the sponge
+    do {
+        randomX = Phaser.Math.Between(300, window.innerWidth - 100);
+        randomY = Phaser.Math.Between(100, window.innerHeight - 100);
 
-    // If waterAmount > 0, enable collision again
-    if (waterAmount > 0) {
-        overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+        let splashBounds = new Phaser.Geom.Rectangle(randomX - 50, randomY - 50, 100, 100);
+
+        isValidPosition = fireObstacles.every(fire => {
+            let fireBounds = fire.getBounds();
+            return getDistanceBetweenRectangles(splashBounds, fireBounds) >= 100;
+        });
+
+        let refillBounds = refillZone.getBounds();
+        if (Phaser.Geom.Intersects.RectangleToRectangle(splashBounds, refillBounds)) {
+            isValidPosition = false;
+        }
+    } while (!isValidPosition);
+
+    splash = this.physics.add.staticImage(randomX, randomY, 'splashImage').setAlpha(1).setScale(1).setDepth(0);
+    if (waterAmount > 0) overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+}
+
+function spawnFireObstacles() {
+    while (fireObstacles.length < maxFires) {
+        let fire;
+        let isValidPosition = false;
+
+        do {
+            let randomX = Phaser.Math.Between(200, window.innerWidth - 200);
+            let randomY = Phaser.Math.Between(200, window.innerHeight - 200);
+            fire = this.physics.add.image(randomX, randomY, 'fireImage');
+
+            let refillBounds = refillZone.getBounds();
+            let fireBounds = fire.getBounds();
+            let isInRefillZone = Phaser.Geom.Intersects.RectangleToRectangle(fireBounds, refillBounds);
+
+            let splashBounds = splash.getBounds();
+            let isNearSplash = getDistanceBetweenRectangles(fireBounds, splashBounds) < 100;
+
+            let isNearOtherFires = fireObstacles.some(existingFire => {
+                let existingFireBounds = existingFire.getBounds();
+                return getDistanceBetweenRectangles(fireBounds, existingFireBounds) < 100;
+            });
+
+            if (!isInRefillZone && !isNearSplash && !isNearOtherFires) {
+                isValidPosition = true;
+            } else {
+                fire.destroy();
+            }
+        } while (!isValidPosition);
+
+        fire.setScale(0.15);
+        fireObstacles.push(fire);
+        this.physics.add.overlap(Spongeimage, fire, touchFire, null, this);
     }
 }
 
-// ✅ Function to check if Spongeimage is fully inside the blue refill zone
+function getDistanceBetweenRectangles(rect1, rect2) {
+    let rect1CenterX = rect1.x + rect1.width / 2;
+    let rect1CenterY = rect1.y + rect1.height / 2;
+    let rect2CenterX = rect2.x + rect2.width / 2;
+    let rect2CenterY = rect2.y + rect2.height / 2;
+    let dx = rect1CenterX - rect2CenterX;
+    let dy = rect1CenterY - rect2CenterY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function touchFire(player, fire) {
+    let currentTime = this.time.now;
+
+    if (currentTime - lastFireCollisionTime >= fireCooldown) {
+        waterAmount = Math.max(0, waterAmount - 30);
+        waterText.setText(`Water: ${waterAmount}%`);
+        timeLeft = Math.max(0, timeLeft - 10);
+        timerText.setText(`Time: ${timeLeft}`);
+        lastFireCollisionTime = currentTime;
+
+        if (waterAmount === 0) {
+            this.physics.world.removeCollider(overlap);
+        }
+    }
+}
+
 function isInRefillZone() {
     let spongeBounds = Spongeimage.getBounds();
     let refillBounds = refillZone.getBounds();
@@ -177,17 +211,143 @@ function isInRefillZone() {
     );
 }
 
-// ✅ Function to refill water when inside the blue zone
-function refillWater() {
-    if (waterAmount < 100) {
-        waterAmount = Math.min(100, waterAmount + 20);
-        waterText.setText(`Water: ${waterAmount}%`); // Update water text
-    }
+function moveFireObstacles() {
+    fireObstacles.forEach(fire => {
+        let newX, newY;
+        let isValidPosition = false;
 
-    // Re-enable cleaning if it was disabled
-    if (!overlap) {
-        overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
-    }
+        do {
+            newX = Phaser.Math.Between(200, window.innerWidth - 200);
+            newY = Phaser.Math.Between(200, window.innerHeight - 200);
+
+            let fireBounds = new Phaser.Geom.Rectangle(newX - 50, newY - 50, 100, 100);
+
+            let refillBounds = refillZone.getBounds();
+            let isInRefillZone = Phaser.Geom.Intersects.RectangleToRectangle(fireBounds, refillBounds);
+
+            let splashBounds = splash.getBounds();
+            let isNearSplash = getDistanceBetweenRectangles(fireBounds, splashBounds) < 100;
+
+            let isNearOtherFires = fireObstacles.some(existingFire => {
+                if (existingFire === fire) return false;
+                let existingFireBounds = existingFire.getBounds();
+                return getDistanceBetweenRectangles(fireBounds, existingFireBounds) < 100;
+            });
+
+            if (!isInRefillZone && !isNearSplash && !isNearOtherFires) {
+                isValidPosition = true;
+            }
+        } while (!isValidPosition);
+
+        fire.setPosition(newX, newY);
+    });
+}
+
+function createStartGamePopup() {
+    startGamePopup = document.createElement('div');
+    startGamePopup.style.position = 'fixed';
+    startGamePopup.style.top = '50%';
+    startGamePopup.style.left = '50%';
+    startGamePopup.style.transform = 'translate(-50%, -50%)';
+    startGamePopup.style.backgroundColor = 'white';
+    startGamePopup.style.padding = '20px';
+    startGamePopup.style.border = '2px solid black';
+    startGamePopup.style.borderRadius = '10px';
+    startGamePopup.style.textAlign = 'center';
+    startGamePopup.style.zIndex = '1000';
+
+    let message = document.createElement('p');
+    message.textContent = 'Tato hra je o čištění skvrn od vína z koberce houbičkou. Vaše houbička má ale jenom omezené množství vody takže si ji budete muset doplňovat. Dávaj te si ale pozor na oheň co je na koberci, asi nějakej blb si hrál se sirkama.';
+    message.style.fontSize = '18px';
+    message.style.marginBottom = '20px';
+    startGamePopup.appendChild(message);
+
+    startGameButton = document.createElement('button');
+    startGameButton.textContent = 'Start Game';
+    startGameButton.style.fontSize = '18px';
+    startGameButton.style.padding = '10px 20px';
+    startGameButton.style.cursor = 'pointer';
+    startGameButton.addEventListener('click', () => {
+        hideStartGamePopup();
+        initializeGame();
+    });
+    startGamePopup.appendChild(startGameButton);
+
+    document.body.appendChild(startGamePopup);
+}
+
+function hideStartGamePopup() {
+    startGamePopup.style.display = 'none';
+}
+
+function initializeGame() {
+    refillZoneWidth = window.innerWidth * 0.15;
+    refillZoneImage = game.scene.scenes[0].add.image(refillZoneWidth / 2, window.innerHeight / 2, 'refillZoneImage');
+    refillZoneImage.setDisplaySize(refillZoneWidth, window.innerHeight).setDepth(0);
+    refillZone = game.scene.scenes[0].add.rectangle(refillZoneWidth / 2, window.innerHeight / 2, refillZoneWidth, window.innerHeight);
+    game.scene.scenes[0].physics.add.existing(refillZone, true);
+    refillZone.visible = false;
+
+    Spongeimage = game.scene.scenes[0].physics.add.image(0, 0, 'playerImage');
+    Spongeimage.setScale(0.2);
+    Spongeimage.setCollideWorldBounds(true);
+    Spongeimage.setDepth(1);
+
+    prevX = Spongeimage.x;
+    prevY = Spongeimage.y;
+
+    spawnNewSplash.call(game.scene.scenes[0]);
+    spawnFireObstacles.call(game.scene.scenes[0]);
+
+    scoreText = game.scene.scenes[0].add.text(window.innerWidth - 250, 10, `Score: ${score}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' }).setDepth(2);
+    waterText = game.scene.scenes[0].add.text(window.innerWidth - 250, 50, `Water: ${waterAmount}%`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' }).setDepth(2);
+    timerText = game.scene.scenes[0].add.text(window.innerWidth / 2, 10, `Time: ${timeLeft}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5, 0);
+
+    overlap = game.scene.scenes[0].physics.add.overlap(Spongeimage, splash, detectMovement, null, game.scene.scenes[0]);
+    game.scene.scenes[0].time.addEvent({ delay: 1000, callback: updateTimer, callbackScope: game.scene.scenes[0], loop: true });
+
+    game.scene.scenes[0].scene.resume();
+}
+
+function createGameOverPopup() {
+    gameOverPopup = document.createElement('div');
+    gameOverPopup.style.position = 'fixed';
+    gameOverPopup.style.top = '50%';
+    gameOverPopup.style.left = '50%';
+    gameOverPopup.style.transform = 'translate(-50%, -50%)';
+    gameOverPopup.style.backgroundColor = 'white';
+    gameOverPopup.style.padding = '20px';
+    gameOverPopup.style.border = '2px solid black';
+    gameOverPopup.style.borderRadius = '10px';
+    gameOverPopup.style.textAlign = 'center';
+    gameOverPopup.style.zIndex = '1000';
+    gameOverPopup.style.display = 'none';
+
+    let message = document.createElement('p');
+    message.textContent = 'Game Over!';
+    message.style.fontSize = '24px';
+    message.style.marginBottom = '20px';
+    gameOverPopup.appendChild(message);
+
+    refreshButton = document.createElement('button');
+    refreshButton.textContent = 'Restart stránky';
+    refreshButton.style.fontSize = '18px';
+    refreshButton.style.padding = '10px 20px';
+    refreshButton.style.cursor = 'pointer';
+    refreshButton.addEventListener('click', () => {
+        location.reload();
+    });
+    gameOverPopup.appendChild(refreshButton);
+
+    document.body.appendChild(gameOverPopup);
+}
+
+function showGameOverPopup() {
+    gameOverPopup.style.display = 'block';
+}
+
+function hideGameOverPopup() {
+    gameOverPopup.style.display = 'none';
 }
 
 let game = new Phaser.Game(config);

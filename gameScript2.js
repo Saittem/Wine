@@ -2,7 +2,7 @@ let config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
-    backgroundColor: 0xF5F5F5, // ✅ Set background color to whitesmoke
+    backgroundColor: 0xF5F5F5,
     physics: {
         default: "arcade",
         arcade: { debug: true }
@@ -16,167 +16,220 @@ let config = {
 
 let Spongeimage;
 let prevX, prevY;
-let splash; // The splash image
-let lastDetectionTime = 0; // Cooldown timer
-let score = 0; // Score counter
-let waterAmount = 100; // Water amount (starts at 100%)
-let overlap; // Stores the overlap collider
-let refillZone; // Refill area
-let refillZoneWidth; // Stores the width of the refill zone
-let lastCollisionTime = 0;  // Track the last collision time
-let splashResetDelay = 1000; // 5 seconds to reset opacity if no collision happens
+let splash;
+let lastDetectionTime = 0;
+let score = 0;
+let waterAmount = 100;
+let overlap;
+let refillZone;
+let refillZoneImage;
+let refillZoneWidth;
+let lastCollisionTime = 0;
+let splashResetDelay = 1000;
+let timeInRefillZone = 0;
+let refillRate = 500;
+let refillAmount = 20;
+let timeLeft = 60;
+let fireObstacles = [];
+let maxFires = 4;
 
 function preload() {
     this.load.image('playerImage', 'Assets/sponge.png');
     this.load.image('splashImage', 'Assets/wine-splash.svg');
+    this.load.image('refillZoneImage', 'Assets/water.png');
+    this.load.image('fireImage', 'Assets/fire.png'); // Added fireImage loading
 }
 
 function create() {
-    // ✅ Create water refill zone (8% width, full height)
     refillZoneWidth = window.innerWidth * 0.15;
-    refillZone = this.add.rectangle(refillZoneWidth / 2, window.innerHeight / 2, refillZoneWidth, window.innerHeight, 0x0000FF);
-    this.physics.add.existing(refillZone, true); // Make it a physics static object
+    refillZoneImage = this.add.image(refillZoneWidth / 2, window.innerHeight / 2, 'refillZoneImage');
+    refillZoneImage.setDisplaySize(refillZoneWidth, window.innerHeight).setDepth(0);
+    refillZone = this.add.rectangle(refillZoneWidth / 2, window.innerHeight / 2, refillZoneWidth, window.innerHeight);
+    this.physics.add.existing(refillZone, true);
+    refillZone.visible = false;
 
-    // Create player (Spongeimage) as a physics object
     Spongeimage = this.physics.add.image(0, 0, 'playerImage');
     Spongeimage.setScale(0.2);
     Spongeimage.setCollideWorldBounds(true);
-    Spongeimage.setDepth(1); // Ensure Sponge is always above the splash
+    Spongeimage.setDepth(1);
 
-    // Store initial position
     prevX = Spongeimage.x;
     prevY = Spongeimage.y;
 
-    // Create the first splash
     spawnNewSplash.call(this);
+    spawnFireObstacles.call(this); // Spawn fire obstacles
 
-    // Add score text in the top-right corner (shifted 100px to the left)
-    scoreText = this.add.text(window.innerWidth - 200, 10, `Score: ${score}`, {
-        fontSize: '32px',
-        fill: '#000000',
-        fontFamily: 'Arial'
-    }).setDepth(2); // Score text depth
+    scoreText = this.add.text(window.innerWidth - 200, 10, `Score: ${score}`, { fontSize: '32px', fill: '#000' }).setDepth(2);
+    waterText = this.add.text(window.innerWidth - 200, 50, `Water: ${waterAmount}%`, { fontSize: '32px', fill: '#000' }).setDepth(2);
+    timerText = this.add.text(window.innerWidth / 2, 10, `Time: ${timeLeft}`, { fontSize: '32px', fill: '#000' }).setOrigin(0.5, 0);
 
-    // Add water amount text beneath the score
-    waterText = this.add.text(window.innerWidth - 200, 50, `Water: ${waterAmount}%`, {
-        fontSize: '32px',
-        fill: '#000000',
-        fontFamily: 'Arial'
-    }).setDepth(2); // Water text depth
-
-    // Enable overlap detection
     overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+    this.time.addEvent({ delay: 1000, callback: updateTimer, callbackScope: this, loop: true });
 }
 
 function update() {
-    let mouseX = this.input.mousePointer.x;
-    let mouseY = this.input.mousePointer.y;
-
-    // Move Spongeimage with the mouse
     Spongeimage.setVelocity(0);
-    Spongeimage.x = mouseX;
-    Spongeimage.y = mouseY;
+    Spongeimage.x = this.input.mousePointer.x;
+    Spongeimage.y = this.input.mousePointer.y;
     Spongeimage.rotation = -50;
 
-    // ✅ Check if sponge is fully inside the refill zone
-    checkRefill();
-
-    // Check for splash opacity reset after inactivity
-    let currentTime = this.time.now;
-    if (currentTime - lastCollisionTime >= splashResetDelay) {
-        // Reset splash opacity if no collision happened in the last 5 seconds
-        if (splash.alpha < 1) {
-            splash.setAlpha(1);
+    if (isInRefillZone()) {
+        timeInRefillZone += this.game.loop.delta;
+        if (timeInRefillZone >= refillRate && waterAmount < 100) {
+            waterAmount = Math.min(100, waterAmount + refillAmount);
+            waterText.setText(`Water: ${waterAmount}%`);
+            timeInRefillZone = 0;
         }
+    } else {
+        timeInRefillZone = 0;
     }
 }
 
-// Function to detect movement inside the splash
 function detectMovement(player, splash) {
-    let currentTime = this.time.now; // Get current time in ms
-
-    // Stop detection if water is 0%
+    let currentTime = this.time.now;
     if (waterAmount === 0) return;
-
-    // Check if enough time has passed since last detection
-    if (currentTime - lastDetectionTime >= 150) { // Cooldown set to 150ms
+    if (currentTime - lastDetectionTime >= 150) {
         if (player.x !== prevX || player.y !== prevY) {
-            lastDetectionTime = currentTime; // Update cooldown timer
-
-            // Reduce splash opacity by 0.1
+            lastDetectionTime = currentTime;
             splash.setAlpha(splash.alpha - 0.1);
-
-            // If splash is fully faded, destroy and spawn a new one
             if (splash.alpha <= 0) {
                 splash.destroy();
                 spawnNewSplash.call(this);
-
-                // Increase the score
                 score++;
-                scoreText.setText(`Score: ${score}`); // Update score display
-
-                // Reduce water amount, but don't let it go below 0%
+                scoreText.setText(`Score: ${score}`);
                 waterAmount = Math.max(0, waterAmount - 10);
-                waterText.setText(`Water: ${waterAmount}%`); // Update water amount display
-
-                // If water reaches 0, remove collision
+                waterText.setText(`Water: ${waterAmount}%`);
+                timeLeft += 5;
+                timerText.setText(`Time: ${timeLeft}`);
                 if (waterAmount === 0) {
-                    this.physics.world.removeCollider(overlap); // Remove collision
+                    this.physics.world.removeCollider(overlap);
                 }
             }
-
-            // Update the last collision time when a collision happens
             lastCollisionTime = currentTime;
         }
     }
-
-    // Update previous position
     prevX = player.x;
     prevY = player.y;
 }
 
-// Function to spawn a new splash inside the screen
+function updateTimer() {
+    timeLeft--;
+    timerText.setText(`Time: ${timeLeft}`);
+    if (timeLeft <= 0) gameOver();
+}
+
+function gameOver() {
+    this.physics.pause();
+    this.add.text(window.innerWidth / 2 - 100, window.innerHeight / 2, "Game Over", { fontSize: "48px", fill: "#ff0000" });
+}
+
 function spawnNewSplash() {
-    let randomX = Phaser.Math.Between(300, window.innerWidth - 100); // Avoid spawn in refill zone
-    let randomY = Phaser.Math.Between(100, window.innerHeight - 100);
+    let randomX, randomY;
+    let isValidPosition = false;
 
-    splash = this.physics.add.staticImage(randomX, randomY, 'splashImage').setAlpha(1);
-    splash.setScale(1).refreshBody();
-    splash.setDepth(0); // Ensure the splash is always below the sponge
+    do {
+        // Generate a random position
+        randomX = Phaser.Math.Between(300, window.innerWidth - 100);
+        randomY = Phaser.Math.Between(100, window.innerHeight - 100);
 
-    // If waterAmount > 0, enable collision again
-    if (waterAmount > 0) {
-        overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+        // Create a temporary bounds object for the splash
+        let splashBounds = new Phaser.Geom.Rectangle(randomX - 50, randomY - 50, 100, 100);
+
+        // Ensure the splash is not too close to any fire
+        isValidPosition = fireObstacles.every(fire => {
+            let fireBounds = fire.getBounds();
+            return getDistanceBetweenRectangles(splashBounds, fireBounds) >= 100;
+        });
+
+        // Ensure the splash is not in the refill zone
+        let refillBounds = refillZone.getBounds();
+        if (Phaser.Geom.Intersects.RectangleToRectangle(splashBounds, refillBounds)) {
+            isValidPosition = false;
+        }
+    } while (!isValidPosition);
+
+    // Create the splash at the valid position
+    splash = this.physics.add.staticImage(randomX, randomY, 'splashImage').setAlpha(1).setScale(1).setDepth(0);
+    if (waterAmount > 0) overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
+}
+
+function spawnFireObstacles() {
+    while (fireObstacles.length < maxFires) {
+        let fire;
+        let isValidPosition = false;
+
+        do {
+            // Generate a random position
+            let randomX = Phaser.Math.Between(200, window.innerWidth - 200);
+            let randomY = Phaser.Math.Between(200, window.innerHeight - 200);
+            fire = this.physics.add.image(randomX, randomY, 'fireImage');
+
+            // Ensure the fire is not in the refill zone
+            let refillBounds = refillZone.getBounds();
+            let fireBounds = fire.getBounds();
+            let isInRefillZone = Phaser.Geom.Intersects.RectangleToRectangle(fireBounds, refillBounds);
+
+            // Ensure the fire is not too close to the splash
+            let splashBounds = splash.getBounds();
+            let isNearSplash = getDistanceBetweenRectangles(fireBounds, splashBounds) < 100;
+
+            // Ensure the fire is not too close to other fires
+            let isNearOtherFires = fireObstacles.some(existingFire => {
+                let existingFireBounds = existingFire.getBounds();
+                return getDistanceBetweenRectangles(fireBounds, existingFireBounds) < 100;
+            });
+
+            // If the position is valid, keep the fire
+            if (!isInRefillZone && !isNearSplash && !isNearOtherFires) {
+                isValidPosition = true;
+            } else {
+                // Otherwise, destroy the fire and try again
+                fire.destroy();
+            }
+        } while (!isValidPosition);
+
+        // Set the scale of the fire
+        fire.setScale(0.15);
+
+        // Add the fire to the obstacles array
+        fireObstacles.push(fire);
+
+        // Add overlap detection for the fire
+        this.physics.add.overlap(Spongeimage, fire, touchFire, null, this);
     }
 }
 
-// ✅ Function to check if Spongeimage is fully inside the blue refill zone
-function checkRefill() {
+// Helper function to calculate the distance between two rectangles
+function getDistanceBetweenRectangles(rect1, rect2) {
+    // Calculate the center points of the rectangles
+    let rect1CenterX = rect1.x + rect1.width / 2;
+    let rect1CenterY = rect1.y + rect1.height / 2;
+    let rect2CenterX = rect2.x + rect2.width / 2;
+    let rect2CenterY = rect2.y + rect2.height / 2;
+
+    // Calculate the distance between the centers
+    let dx = rect1CenterX - rect2CenterX;
+    let dy = rect1CenterY - rect2CenterY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function touchFire(player, fire) {
+    waterAmount = Math.max(0, waterAmount - 30);
+    waterText.setText(`Water: ${waterAmount}%`);
+    if (waterAmount === 0) {
+        this.physics.world.removeCollider(overlap);
+    }
+}
+
+function isInRefillZone() {
     let spongeBounds = Spongeimage.getBounds();
     let refillBounds = refillZone.getBounds();
-
-    // Check if the sponge is completely inside the refill zone
-    if (
+    return (
         spongeBounds.left >= refillBounds.left &&
         spongeBounds.right <= refillBounds.right &&
         spongeBounds.top >= refillBounds.top &&
         spongeBounds.bottom <= refillBounds.bottom
-    ) {
-        refillWater();
-    }
-}
-
-// ✅ Function to refill water when inside the blue zone
-function refillWater() {
-    if (waterAmount < 100) {
-        waterAmount = 100;
-        waterText.setText(`Water: ${waterAmount}%`); // Update water text
-
-        // Re-enable cleaning if it was disabled
-        if (!overlap) {
-            overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
-        }
-    }
+    );
 }
 
 let game = new Phaser.Game(config);
