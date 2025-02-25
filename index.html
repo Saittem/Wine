@@ -9,125 +9,123 @@
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
 </head>
 <body>
-    <section id="transitionAnimation" style="display: none;">
-        <div id="wine-pour"></div>
-        <div id="wine-fill"></div>
-    </section>
-    <section id="ageVerificationSection">
-        <div class="ageVerification">
-            <section id="normalMode">
-                <h1>Zadejte svůj věk.</h1>
-                <a>Vstupujete na stránky s prodejem alkoholu. Prosím potvrďte, že Vám již bylo 18 let.</a><br>
-                <input id="ageDate" type="date">
-                <span class="button" onclick="checkAge()">
-                    <a>Potvrdit</a>
-                </span>
-            </section>
-            <section id="loadingMode" style="display: none;">
-                <img src="Assets/loading.gif">
-                <h1>Načítání</h1>
-            </section>
-            <section id="babyMode" style="display: none;">
-                <img src="Assets/baby-idle.png" id="babyImg" alt="baby" onclick="babyHappy()">
-            </section>
-        </div>
-    </section>
-    <section id="mainPageSection" style="display: none;">
-        <div class="frontPage" id="frontPage">
-            <h1>Víno</h1>
-            <div class="scrollArrow" onclick="scrollButtonDown()" id="scrollArrow">
-                <img src="Assets/arrow.png">
+    <section id="page">
+        <section id="transitionAnimation" style="display: none;">
+            <div id="wine-pour"></div>
+            <div id="wine-fill"></div>
+        </section>
+        <section id="ageVerificationSection">
+            <div class="ageVerification">
+                <section id="normalMode">
+                    <h1>Zadejte svůj věk.</h1>
+                    <a>Vstupujete na stránky s prodejem alkoholu. Prosím potvrďte, že Vám již bylo 18 let.</a><br>
+                    <input id="ageDate" type="date">
+                    <span class="button" onclick="checkAge()">
+                        <a>Potvrdit</a>
+                    </span>
+                </section>
+                <section id="loadingMode" style="display: none;">
+                    <img src="Assets/loading.gif">
+                    <h1>Načítání</h1>
+                </section>
+                <section id="babyMode" style="display: none;">
+                    <img src="Assets/baby-idle.png" id="babyImg" alt="baby" onclick="babyHappy()">
+                </section>
             </div>
-        </div>
-        <div class="content">
-            <div id="drinkingCount">
-                <a id="drinkCount">Počet vypití: 0</a>
+        </section>
+        <section id="mainPageSection" style="display: none;">
+            <div class="frontPage" id="frontPage">
+                <h1>Víno</h1>
+                <div class="scrollArrow" id="scrollArrow">
+                    <img src="Assets/arrow.png">
+                </div>
             </div>
-            <div class="scrollArrow contentArrow" onclick="scrollButtonUp()" id="scrollArrowBack">
-                <img src="Assets/arrow.png">
-            </div>
-            <div id="frenchMusic">
-                <img src="Assets/volume-icon.png" onclick="playFrench()">
-                <input type="range" id="audioVolume" value="50%">
-            </div>
-            <div id="musicButtonMobile" onclick="playFrench()" style="display: none;">
-                <a>Muzika</a>
-                <img src="Assets/volume-icon.png">
-            </div>
-            <div id="playButton" style="display: none;">
-                <img src="" alt="">
-            </div>
-            <div class="body" id="contentBody">
-                <h1 id="wineText">Vyberte si víno.</h1>
-                <span class="wineSelection" id="wineSelection">
-                    <div class="card" onclick="wineChosen('šumivé víno')">
-                        <img src="Assets/sparkling.jpg" alt="šumivé víno">
-                        <span>
-                            <h2>Šumivé víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('suché bílé víno')">
-                        <img src="Assets/dry-white.jpg" alt="suché bílé víno">
-                        <span>
-                            <h2>Suché bílé víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('sladké bílé víno')">
-                        <img src="Assets/sweet-white.jpg" alt="sladké bílé víno">
-                        <span>
-                            <h2>Sladké bílé víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('bohaté bílé víno')">
-                        <img src="Assets/rich-white.jpg" alt="bohaté bílé víno">
-                        <span>
-                            <h2>Bohaté bílé víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('lehce červené víno')">
-                        <img src="Assets/light-red.jpg" alt="lehce červené víno">
-                        <span>
-                            <h2>Lehce červené víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('středně červené víno')">
-                        <img src="Assets/medium-red.jpg" alt="středně červené víno">
-                        <span>
-                            <h2>Středně červené víno</h2>
-                        </span>
-                    </div>
-                    <div class="card" onclick="wineChosen('dezertní víno')">
-                        <img src="Assets/dessert.jpg" alt="dezertní víno">
-                        <span>
-                            <h2>Dezertní víno</h2>
-                        </span>
-                    </div>
-                </span>
-                <h1 id="drinkText" style="display: none;"></h1>
-                <h1 id="drinkText2" style="display: none;">Pokud se napiješ 5 stane se něco dobrého.</h1>
-                <a></a>
-                <div id="drinkButtons">
-                    <div id="drinkButton" style="display: none;" onclick="drink()">
-                        <a>Napít se</a>
-                    </div>
-                    <div id="bodyBackButton" onclick="bodyBack()" style="display: none;">
-                        <a>Jít Zpátky</a>
-                    </div>
-                    <div id="buyButton" style="display: none;" onclick="buyWine()">
-                        <a>Chci koupit</a>
-                    </div>
-                    <div id="buyBackButton" style="display: none;" onclick="buyBack()">
-                        <a>Jít Zpátky</a>
+            <div class="content">
+                <div id="drinkingCount">
+                    <a id="drinkCount">Počet vypití: 0</a>
+                </div>
+                <div id="frenchMusic">
+                    <img src="Assets/volume-icon.png" onclick="playFrench()">
+                    <input type="range" id="audioVolume" value="50%">
+                </div>
+                <div id="musicButtonMobile" onclick="playFrench()" style="display: none;">
+                    <a>Muzika</a>
+                    <img src="Assets/volume-icon.png">
+                </div>
+                <div id="playButton" style="display: none;">
+                    <div>
+                        <img src="Assets/game-icon.png" alt="">
                     </div>
                 </div>
-                <img src="" id="pouringImage" style="display: none;">
+                <div class="body" id="contentBody">
+                    <h1 id="wineText">Vyberte si víno.</h1>
+                    <span class="wineSelection" id="wineSelection">
+                        <div class="card" onclick="wineChosen('šumivé víno')">
+                            <img src="Assets/sparkling.jpg" alt="šumivé víno">
+                            <span>
+                                <h2>Šumivé víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('suché bílé víno')">
+                            <img src="Assets/dry-white.jpg" alt="suché bílé víno">
+                            <span>
+                                <h2>Suché bílé víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('sladké bílé víno')">
+                            <img src="Assets/sweet-white.jpg" alt="sladké bílé víno">
+                            <span>
+                                <h2>Sladké bílé víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('bohaté bílé víno')">
+                            <img src="Assets/rich-white.jpg" alt="bohaté bílé víno">
+                            <span>
+                                <h2>Bohaté bílé víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('lehce červené víno')">
+                            <img src="Assets/light-red.jpg" alt="lehce červené víno">
+                            <span>
+                                <h2>Lehce červené víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('středně červené víno')">
+                            <img src="Assets/medium-red.jpg" alt="středně červené víno">
+                            <span>
+                                <h2>Středně červené víno</h2>
+                            </span>
+                        </div>
+                        <div class="card" onclick="wineChosen('dezertní víno')">
+                            <img src="Assets/dessert.jpg" alt="dezertní víno">
+                            <span>
+                                <h2>Dezertní víno</h2>
+                            </span>
+                        </div>
+                    </span>
+                    <h1 id="drinkText" style="display: none;"></h1>
+                    <h1 id="drinkText2" style="display: none;">Pokud se napiješ 5 stane se něco dobrého.</h1>
+                    <a></a>
+                    <div id="drinkButtons">
+                        <div id="drinkButton" style="display: none;" onclick="drink()">
+                            <a>Napít se</a>
+                        </div>
+                        <div id="bodyBackButton" onclick="bodyBack()" style="display: none;">
+                            <a>Jít Zpátky</a>
+                        </div>
+                        <div id="buyButton" style="display: none;" onclick="buyWine()">
+                            <a>Chci koupit</a>
+                        </div>
+                        <div id="buyBackButton" style="display: none;" onclick="buyBack()">
+                            <a>Jít Zpátky</a>
+                        </div>
+                    </div>
+                    <img src="" id="pouringImage" style="display: none;">
+                </div>
             </div>
-        </div>
+        </section>
     </section>
-    <section id="minigameSection" style="display: none;">
-
-    </section>
-    <!--<script src="gameScript.js"></script>-->
+    <script src="gameScript.js"></script>
 </body>
 <script src="script.js"></script>
 </html>

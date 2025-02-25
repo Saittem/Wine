@@ -88,10 +88,8 @@ const drinkText = document.getElementById("drinkText");
 
 if (mobileCheck){
     let scrollArrow = document.getElementById("scrollArrow");
-    let scrollArrowBack = document.getElementById("scrollArrowBack");
 
     scrollArrow.style.display = "none";
-    scrollArrowBack.style.display = "none";
     drinkingCount.style.display = "none";
     frenchMusicButton.style.display = "none";
     musicButtonMobile.style.display = "";
@@ -104,7 +102,8 @@ else{
     }
 }
 
-function scrollButtonDown() {
+
+/*function scrollButtonDown() {
     frontPageHeight = document.getElementById("frontPage").clientHeight;
     console.log(frontPageHeight);
     clearTimeout(window.scrollTimeout);
@@ -112,7 +111,6 @@ function scrollButtonDown() {
         window.scrollTo({ top: frontPageHeight, behavior: "smooth" });
     }, 100);
 }
-
 
 function scrollButtonUp(){
     clearTimeout(window.scrollTimeout);
@@ -124,7 +122,7 @@ function scrollButtonUp(){
 document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("wheel", preventScroll, { passive: false });
     window.addEventListener("touchmove", preventScroll, { passive: false });
-});
+});*/
 
 
 //card effect
@@ -209,17 +207,7 @@ function wineChosen(wineName){
 const frenchMusicRange = document.getElementById("audioVolume");
 const frenchMusic = new Audio("Assets/french-music.mp3");
 let isPlaying = false;
-let musicVolume;
-
-function pouringAudioEnded(){
-    frenchMusic.volume = musicVolume;
-    drinkText.style.display = "";
-    drinkText2.style.display = "";
-    drinkButton.style.display = "";
-    bodyBackButton.style.display = "";
-    pouringImage.style.display = "none";
-    buyButton.style.display = "";
-}
+let musicVolume = 0;
 
 function drink(){
     const pouringSound = new Audio("Assets/pouring-wine.mp3");
@@ -252,6 +240,20 @@ function drink(){
     changeDrinkCount();
 }
 
+function pouringAudioEnded(){
+    frenchMusic.volume = musicVolume;
+    drinkText.style.display = "";
+    
+    if(!mobileCheck){
+        drinkText2.style.display = "";
+    }
+
+    drinkButton.style.display = "";
+    bodyBackButton.style.display = "";
+    pouringImage.style.display = "none";
+    buyButton.style.display = "";
+}
+
 function bodyBack(){
     wineText.style.display = "";
     wineSelection.style.display = "";
@@ -264,11 +266,18 @@ function bodyBack(){
     buyButton.style.display = "none";
 }
 
+let playButton = document.getElementById("playButton");
+
 function changeDrinkCount(){
     const drinkCounter = document.getElementById("drinkCount");
     drinkCount += 1;
 
     drinkCounter.innerHTML = "Počet vypití: " + drinkCount;
+
+    if(drinkCount >= 5 && !mobileCheck){
+        playButton.style.display = "";
+        playButton.style.animation = "playButtonOpacity 250ms ease-in";
+    }
 }
 
 //french music
@@ -289,12 +298,16 @@ function playFrench(){
     isPlaying = !isPlaying;
 }
 
+document.getElementById("playButton").addEventListener("click", function(){
+    frenchMusic.play();
+});
+
 
 //buy wine
 const buyBackButton = document.getElementById("buyBackButton");
 
 function buyWine(){
-    drinkText.innerHTML = "Pokud is chcete koupit " + chosenWineName + ", kontaktujte nás na +420 123 456 798.";
+    drinkText.innerHTML = "Pokud is chcete koupit " + chosenWineName + ", kontaktujte nás na:<br>+420 123 456 798.";
     buyBackButton.style.display = "";
     
     if(!mobileCheck){

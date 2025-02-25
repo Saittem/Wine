@@ -6,6 +6,9 @@ body{
     background-size: cover;
     background-attachment: fixed;
     user-select: none;
+    margin: 0;
+    top: 0;
+    left: 0;
 }
 
 body::-webkit-scrollbar {
@@ -83,6 +86,15 @@ a, p, input{
     }
     100%{
         transform: translateX(-5vh);
+    }
+}
+
+@keyframes playButtonOpacity {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
     }
 }
 
@@ -250,9 +262,6 @@ a, p, input{
         margin-bottom: 2vh;
         justify-self: center;
     }
-    .scrollArrow:hover{
-        cursor: pointer;
-    }
     .scrollArrow img{
         filter: invert(1);
         width: 100%;
@@ -356,6 +365,35 @@ a, p, input{
             border-radius: 10px;
         }
 
+        /*---Game Button---*/
+        #playButton{
+            position: absolute;
+            width: 10vh;
+            height: 10vh;
+            background-color: var(--lighterWineColor);
+            bottom: -90vh;
+            right: 5vw;
+            border-radius: 50%;
+        }
+        #playButton div{
+            width: 100%;
+            height: 100%;
+            filter: invert(1);
+            transition: filter 250ms ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        #playButton div:hover{
+            filter: invert(0.5);
+            transition: filter 250ms ease-in-out;
+            cursor: pointer;
+        }
+        #playButton img{
+            width: 65%;
+        }
+
 
     /*---Content---*/
     .content{
@@ -364,31 +402,37 @@ a, p, input{
         padding-top: 5vh;
     }
 
-    /*---Content Arrow---*/
-    .contentArrow{
-        position: absolute;
-        transform: translateX(175vh) rotateZ(-90deg);
-    }
-
     .body{
         width: 70%;
-        max-height: fit-content;
-        min-height: fit-content;
+        height: 80%;
         padding-bottom: 2vh;
         background-color: whitesmoke;
         margin-left: auto;
         margin-right: auto;
         display: flex;
+        justify-content: center;
         flex-direction: column;
         align-items: center;
         border-radius: 10px;
         border: 5px lightgray solid;
         margin-top: 7vh;
     }
+    @media only screen and (max-width: 600px){
+        .body{
+            height: fit-content;
+        }
+    }
     .body h1{
         font-size: 5vh;
         margin: 0;
         margin-top: 2vh;
+        width: 50%;
+        text-align: center;
+    }
+    @media only screen and (max-width: 600px){
+        .body h1{
+            width: 80%;
+        }
     }
     .wineSelection{
         width: 100%;
@@ -438,11 +482,16 @@ a, p, input{
     @media only screen and (max-width: 600px){
         #drinkButtons{
             flex-direction: column;
+            align-items: center;
         }
     }
     #drinkButton, #bodyBackButton, #buyButton, #buyBackButton{
-        width: 25vh;
-        height: 10vh;
+        width: 100%;
+        min-width: fit-content;
+        text-wrap-mode: nowrap;
+        padding-left: 1vw;
+        padding-right: 1vw;
+        height: 8vh;
         background-color: var(--wineColor);
         border-radius: 10px;
         display: flex;
@@ -462,10 +511,9 @@ a, p, input{
         transition: color 500ms;
     }
     #pouringImage{
+        width: 90%;
         height: 90%;
     }
     #drinkText, #drinkText2{
         margin: 0;
     }
-
-/*---Minigame Section---*/
