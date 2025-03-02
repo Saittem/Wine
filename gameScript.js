@@ -1,8 +1,10 @@
+//funkce pro konzoli
 function playGame(){
     playButton.style.display = "";
     playButton.style.animation = "playButtonOpacity 250ms ease-in";
 }
 
+//skript se spustí po stisknutí tlačítka
 playButton.addEventListener("click", function(){
     document.getElementById("page").style.display = "none";
     
@@ -52,6 +54,7 @@ playButton.addEventListener("click", function(){
     let startGamePopup;
     let startGameButton;
     
+    //přednačtení resources
     function preload() {
         this.load.image('playerImage', 'Assets/sponge.png');
         this.load.image('splashImage', 'Assets/wine-splash.svg');
@@ -111,6 +114,7 @@ playButton.addEventListener("click", function(){
         }
     }
     
+    //detekuje pohyb v skvrně
     function detectMovement(player, splash) {
         let currentTime = this.time.now;
         if (waterAmount === 0) return;
@@ -144,17 +148,20 @@ playButton.addEventListener("click", function(){
         prevY = player.y;
     }
     
+    //čas
     function updateTimer() {
         timeLeft--;
         timerText.setText(`Time: ${timeLeft}`);
         if (timeLeft <= 0) gameOver.call(this);
     }
     
+    //game over
     function gameOver() {
         this.physics.pause();
         showGameOverPopup();
     }
     
+    //vytvoří náhodně novou skvrnu
     function spawnNewSplash() {
         let randomX, randomY;
         let isValidPosition = false;
@@ -180,6 +187,7 @@ playButton.addEventListener("click", function(){
         if (waterAmount > 0) overlap = this.physics.add.overlap(Spongeimage, splash, detectMovement, null, this);
     }
     
+    //náhodně vygeneruje 4 ohnivé překážky
     function spawnFireObstacles() {
         while (fireObstacles.length < maxFires) {
             let fire;
@@ -215,6 +223,7 @@ playButton.addEventListener("click", function(){
         }
     }
     
+    //pro vytváření mezer mezi objekty
     function getDistanceBetweenRectangles(rect1, rect2) {
         let rect1CenterX = rect1.x + rect1.width / 2;
         let rect1CenterY = rect1.y + rect1.height / 2;
@@ -225,6 +234,7 @@ playButton.addEventListener("click", function(){
         return Math.sqrt(dx * dx + dy * dy);
     }
     
+    //když se hráč dotkne ohně
     function touchFire(player, fire) {
         let currentTime = this.time.now;
     
@@ -241,6 +251,7 @@ playButton.addEventListener("click", function(){
         }
     }
     
+    //kontroluje jestli je hráč v zóně pro vodu
     function isInRefillZone() {
         let spongeBounds = Spongeimage.getBounds();
         let refillBounds = refillZone.getBounds();
@@ -252,6 +263,7 @@ playButton.addEventListener("click", function(){
         );
     }
     
+    //přemístí překážky na náhodné místo
     function moveFireObstacles() {
         fireObstacles.forEach(fire => {
             let newX, newY;
@@ -284,6 +296,7 @@ playButton.addEventListener("click", function(){
         });
     }
     
+    //vytvoří game start menu
     function createStartGamePopup() {
         startGamePopup = document.createElement('div');
         startGamePopup.style.position = 'fixed';
@@ -317,6 +330,7 @@ playButton.addEventListener("click", function(){
         document.body.appendChild(startGamePopup);
     }
     
+    //schová game start menu
     function hideStartGamePopup() {
         startGamePopup.style.display = 'none';
     }
@@ -350,6 +364,7 @@ playButton.addEventListener("click", function(){
         game.scene.scenes[0].scene.resume();
     }
     
+    //vytvoří game over menu
     function createGameOverPopup() {
         gameOverPopup = document.createElement('div');
         gameOverPopup.style.position = 'fixed';
@@ -383,10 +398,12 @@ playButton.addEventListener("click", function(){
         document.body.appendChild(gameOverPopup);
     }
     
+    //zobrazí game over menu
     function showGameOverPopup() {
         gameOverPopup.style.display = 'block';
     }
     
+    //schová game over menu
     function hideGameOverPopup() {
         gameOverPopup.style.display = 'none';
     }

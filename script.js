@@ -2,6 +2,7 @@
 const today = new Date();
 document.getElementById("ageDate").valueAsDate = today;
 
+//podívá se na zadaný věk
 function checkAge(){
     const userDate = new Date(document.getElementById("ageDate").value);
     
@@ -27,6 +28,7 @@ function checkAge(){
 }
 const normalMode = document.getElementById("normalMode");
 
+//není dostatečně starý
 function notOldEnough(){
     const babyMode = document.getElementById("babyMode");
 
@@ -34,6 +36,7 @@ function notOldEnough(){
     babyMode.style.display = "";
 }
 
+//je dostatečně starý
 function OldEnough(){
     const loadingMode = document.getElementById("loadingMode");
     const transition = document.getElementById("transitionAnimation");
@@ -78,7 +81,6 @@ function babyHappy(){
 }
 
 
-//scroll button
 let frontPageHeight;
 const mobileCheck = navigator.userAgentData.mobile;
 const drinkingCount = document.getElementById("drinkingCount");
@@ -86,6 +88,7 @@ const frenchMusicButton = document.getElementById("frenchMusic");
 const musicButtonMobile = document.getElementById("musicButtonMobile");
 const drinkText = document.getElementById("drinkText");
 
+//podívá se jestli zařízení je mobil
 if (mobileCheck){
     let scrollArrow = document.getElementById("scrollArrow");
 
@@ -101,28 +104,6 @@ else{
         event.preventDefault();
     }
 }
-
-
-/*function scrollButtonDown() {
-    frontPageHeight = document.getElementById("frontPage").clientHeight;
-    console.log(frontPageHeight);
-    clearTimeout(window.scrollTimeout);
-    window.scrollTimeout = setTimeout(() => {
-        window.scrollTo({ top: frontPageHeight, behavior: "smooth" });
-    }, 100);
-}
-
-function scrollButtonUp(){
-    clearTimeout(window.scrollTimeout);
-    window.scrollTimeout = setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 100);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    window.addEventListener("wheel", preventScroll, { passive: false });
-    window.addEventListener("touchmove", preventScroll, { passive: false });
-});*/
 
 
 //card effect
@@ -172,6 +153,7 @@ const whiteWine = ["šumivé víno", "suché bílé víno", "sladké bílé vín
 const redWine = ["lehce červené víno", "středně červené víno", "dezertní víno"];
 let drinkCount = 0;
 let chosenWineName;
+
 
 function wineChosen(wineName){
     chosenWineName = wineName;
